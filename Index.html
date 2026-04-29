@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUẠO HOUSE - Hệ Thống Tính Tiền</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --dark: #2d3436;
+            --light: #f9f9f9;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; margin: 0; height: 100vh; background: #e0e0e0; }
+        
+        /* Cột Menu */
+        .menu-section { flex: 2; display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; }
+        .category-btn { background: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .category-btn.active { background: var(--primary); color: white; }
+
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; flex: 1; }
+        .item-card { background: white; padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.05); border-bottom: 4px solid var(--secondary); transition: 0.1s; }
+        .item-card:active { transform: scale(0.95); background: #f0f0f0; }
+        .item-card h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--dark); height: 38px; overflow: hidden; }
+        .item-card p { margin: 0; color: #e67e22; font-weight: bold; }
+
+        /* Cột Hóa Đơn */
+        .order-section { flex: 1; background: white; border-left: 1px solid #ccc; display: flex; flex-direction: column; padding: 20px; min-width: 350px; }
+        .order-header { border-bottom: 2px dashed #ddd; padding-bottom: 10px; text-align: center; }
+        .order-header h2 { margin: 0; color: var(--primary); }
+        
+        .order-list { flex: 1; overflow-y: auto; margin: 15px 0; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .order-item .info { flex: 1; }
+        .order-item .qty-controls { display: flex; align-items: center; gap: 10px; margin-right: 15px; }
+        .btn-qty { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #ccc; background: white; cursor: pointer; }
+
+        .total-area { border-top: 2px solid var(--dark); padding-top: 15px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; margin-bottom: 15px; }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button.main-btn { padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-pay { background: var(--primary); color: white; grid-column: span 2; }
+        .btn-clear { background: #ff7675; color: white; }
+        .btn-print { background: #0984e3; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="menu-section">
+        <div class="categories" id="categories">
+            </div>
+        <div class="items-grid" id="menu-grid">
+            </div>
+    </div>
+
+    <div class="order-section">
+        <div class="order-header">
+            <h2>QUẠO HOUSE</h2>
+            <small id="datetime"></small>
+        </div>
+        <div class="order-list" id="order-list">
+            </div>
+        <div class="total-area">
+            <div class="total-row">
+                <span>Tổng cộng:</span>
+                <span id="total-price">0đ</span>
+            </div>
+            <div class="btn-group">
+                <button class="main-btn btn-pay" onclick="checkout()">CHỐT ĐƠN & LƯU</button>
+                <button class="main-btn btn-clear" onclick="clearAll()">XÓA HẾT</button>
+                <button class="main-btn btn-print" onclick="window.print()">IN BILL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuData = {
+            "Trà Sữa": [
+                { name: "Trà Sữa Matcha", price: 25000 }, { name: "Trà Sữa Socola", price: 25000 },
+                { name: "Trà Sữa Dark Socola", price: 28000 }, { name: "Trà Sữa Thái Xanh", price: 25000 },
+                { name: "Trà Sữa Khoai Môn", price: 25000 }, { name: "Trà Sữa Hạt Dẻ", price: 25000 },
+                { name: "Olong Sữa", price: 20000 }, { name: "Trà Sữa Wao (Full Topping)", price: 25000 },
+                { name: "Trà Sữa Hạt Đắc", price: 20000 }, { name: "Trà Sữa Trân Châu Trắng/Đen", price: 20000 },
+                { name: "Trà Sữa Nguyên Lá", price: 19000 }
+            ],
+            "Trà Trái Cây": [
+                { name: "Olong Sen Nhãn", price: 25000 }, { name: "Long Nhãn Quế Hoa", price: 28000 },
+                { name: "Sen Vàng Machiato", price: 25000 }, { name: "Olong Dâu Tằm", price: 25000 },
+                { name: "Olong Chanh Leo", price: 25000 }, { name: "Olong Chanh Bạc Hà", price: 20000 },
+                { name: "Trà Đào", price: 25000 }, { name: "Trà Đào Cam Sả", price: 25000 },
+                { name: "Hồng Trà Dâu Tây", price: 25000 }, { name: "Hồng Trà Vải", price: 25000 },
+                { name: "Hồng Trà Trân Châu", price: 20000 }, { name: "Hồng Trà Hạt Nổ", price: 25000 },
+                { name: "Trà Lài Đặc Thơm", price: 25000 }, { name: "Lục Trà Lài Mãng Cầu", price: 25000 },
+                { name: "Trà Tắc Xí Muội", price: 15000 }, { name: "Trà Mãng Cầu Hubicus", price: 28000 },
+                { name: "Trà Đào Hubicus", price: 28000 }, { name: "Trà Hubicus", price: 25000 }
+            ],
+            "Cà Phê": [
+                { name: "Cà Phê Đen", price: 15000 }, { name: "Cà Phê Sữa", price: 20000 },
+                { name: "Cà Phê Kem Muối", price: 20000 }, { name: "Cà Phê Blue Kem Cheese", price: 20000 },
+                { name: "Bạc Xỉu", price: 20000 }, { name: "Sữa Tươi Sương Sáo Cà Phê", price: 20000 },
+                { name: "Bạc Xỉu Phô Mai Kem", price: 20000 }, { name: "Bạc Xỉu Phô Mai Cheese", price: 25000 },
+                { name: "Cacao Sữa", price: 15000 }, { name: "Cacao Kem Cheese", price: 25000 },
+                { name: "Phindi Hạnh Nhân", price: 25000 }
+            ],
+            "Yaourt & Soda": [
+                { name: "Yaourt Đặc Thơm", price: 20000 }, { name: "Yaourt Việt Quất", price: 20000 },
+                { name: "Yaourt Dâu Tây", price: 20000 }, { name: "Soda Bạc Hà", price: 20000 },
+                { name: "Soda Blue", price: 20000 }, { name: "Soda Việt Quất", price: 20000 }
+            ],
+            "Topping": [
+                { name: "Trân Châu Trắng/Đen", price: 5000 }, { name: "Thạch Quế Hoa", price: 5000 },
+                { name: "Hạt Nổ Củ Năng", price: 5000 }, { name: "Khúc Bạch Tầng", price: 6000 },
+                { name: "Phô Mai Tươi", price: 5000 }, { name: "Thạch Dừa Sợi", price: 5000 },
+                { name: "Hạt Đắc", price: 6000 }, { name: "Sương Sáo", price: 5000 }
+            ]
+        };
+
+        let currentOrder = [];
+        let currentCat = "Trà Sữa";
+
+        // Khởi tạo
+        function init() {
+            renderCategories();
+            renderMenu();
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        function renderCategories() {
+            const catDiv = document.getElementById('categories');
+            catDiv.innerHTML = Object.keys(menuData).map(cat => `
+                <button class="category-btn ${cat === currentCat ? 'active' : ''}" onclick="switchCat('${cat}')">${cat}</button>
+            `).join('');
+        }
+
+        function switchCat(cat) {
+            currentCat = cat;
+            renderCategories();
+            renderMenu();
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = menuData[currentCat].map(item => `
+                <div class="item-card" onclick="addToOrder('${item.name}', ${item.price})">
+                    <h4>${item.name}</h4>
+                    <p>${item.price.toLocaleString()}đ</p>
+                </div>
+            `).join('');
+        }
+
+        function addToOrder(name, price) {
+            const existing = currentOrder.find(i => i.name === name);
+            if (existing) {
+                existing.qty++;
+            } else {
+                currentOrder.push({ name, price, qty: 1 });
+            }
+            renderOrder();
+        }
+
+        function updateQty(name, delta) {
+            const item = currentOrder.find(i => i.name === name);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    currentOrder = currentOrder.filter(i => i.name !== name);
+                }
+            }
+            renderOrder();
+        }
+
+        function renderOrder() {
+            const list = document.getElementById('order-list');
+            let total = 0;
+            list.innerHTML = currentOrder.map(item => {
+                total += item.price * item.qty;
+                return `
+                    <div class="order-item">
+                        <div class="info">
+                            <div><strong>${item.name}</strong></div>
+                            <small>${item.price.toLocaleString()}đ</small>
+                        </div>
+                        <div class="qty-controls">
+                            <button class="btn-qty" onclick="updateQty('${item.name}', -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="btn-qty" onclick="updateQty('${item.name}', 1)">+</button>
+                        </div>
+                        <div><strong>${(item.price * item.qty).toLocaleString()}đ</strong></div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
+        }
+
+        function clearAll() {
+            if(confirm("Xóa toàn bộ đơn hàng đang chọn?")) {
+                currentOrder = [];
+                renderOrder();
+            }
+        }
+
+        function checkout() {
+            if (currentOrder.length === 0) return;
+            alert("Đã chốt đơn! Tổng tiền: " + document.getElementById('total-price').innerText);
+            currentOrder = [];
+            renderOrder();
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('datetime').innerText = now.toLocaleString('vi-VN');
+        }
+
+        init();
+    </script>
+</body>
+</html>
