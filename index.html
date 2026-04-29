@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QUẠO HOUSE POS - FULL FIX</title>
+    <title>QUẠO HOUSE POS - FULL BILL IMAGE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #4CAF50; --accent: #e67e22; --bg: #f0f2f5; }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body { 
             font-family: -apple-system, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            height: 100dvh; /* Fix lỗi mất khung trên mobile */
-            background: var(--bg); 
-            overflow: hidden; 
+            display: flex; flex-direction: column; 
+            height: 100dvh; background: var(--bg); overflow: hidden; 
         }
 
         /* MENU SECTION */
-        .menu-section { height: 50%; display: flex; flex-direction: column; padding: 10px; background: #fff; z-index: 10; }
+        .menu-section { height: 50%; display: flex; flex-direction: column; padding: 10px; background: #fff; z-index: 10; border-bottom: 2px solid #ddd; }
         .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; flex-shrink: 0; scrollbar-width: none; }
         .categories::-webkit-scrollbar { display: none; }
         
@@ -29,25 +26,29 @@
 
         .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; overflow-y: auto; flex-grow: 1; }
         .item-card { background: #fff; padding: 10px 5px; border-radius: 8px; text-align: center; border: 1px solid #eee; border-bottom: 3px solid #8BC34A; }
-        .item-card h4 { font-size: 11px; height: 28px; overflow: hidden; margin-bottom: 4px; }
+        .item-card h4 { font-size: 11px; height: 28px; overflow: hidden; margin-bottom: 4px; color: #333; }
         .item-card b { color: var(--accent); font-size: 13px; }
 
         /* ORDER SECTION */
-        .order-section { height: 50%; display: flex; flex-direction: column; background: #fff; border-top: 2px solid #ccc; }
-        .order-header { padding: 8px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .order-list { flex: 1; overflow-y: auto; padding: 0 15px; }
-        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
+        .order-section { height: 50%; display: flex; flex-direction: column; background: #fff; }
+        #bill-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: white; }
+        
+        .order-header { padding: 15px; border-bottom: 1px dashed #ccc; text-align: center; flex-shrink: 0; }
+        .order-list { padding: 10px 15px; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
 
         /* BOTTOM AREA */
         .total-area { padding: 10px 15px; border-top: 2px solid #eee; background: #fafafa; flex-shrink: 0; }
-        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 8px; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .btn-pay { background: var(--primary); color: white; padding: 12px; border: none; border-radius: 5px; font-weight: bold; grid-column: span 2; font-size: 16px; }
-        .btn-clear { background: #ff7675; color: white; border: none; padding: 8px; border-radius: 5px; }
-        .btn-print { background: #0984e3; color: white; border: none; padding: 8px; border-radius: 5px; }
-        .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ccc; background: #fff; }
+        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-pay { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; font-weight: bold; grid-column: span 2; font-size: 16px; margin-bottom: 5px; }
+        .btn-clear { background: #ff7675; color: white; border: none; padding: 10px; border-radius: 8px; }
+        .btn-download { background: #0984e3; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+        
+        .qty-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; }
 
-        /* PC / Landscape */
         @media (min-width: 768px) {
             body { flex-direction: row; }
             .menu-section { height: 100dvh; width: 60%; border-right: 2px solid #ddd; }
@@ -66,44 +67,34 @@
     </div>
 
     <div class="order-section">
-        <div class="order-header">
-            <b style="color:var(--primary)">QUẠO HOUSE</b>
-            <small id="datetime" style="font-size: 10px;"></small>
+        <div id="bill-container">
+            <div class="order-header">
+                <h2 style="color:var(--primary);">QUẠO HOUSE</h2>
+                <p style="font-size: 12px; color: #666;">Hóa đơn thanh toán</p>
+                <small id="datetime" style="font-size: 11px; color: #888;"></small>
+            </div>
+            <div class="order-list" id="order-list"></div>
         </div>
-        <div class="order-list" id="order-list"></div>
+
         <div class="total-area">
-            <div class="total-row"><span>Tổng:</span><span id="total-price" style="color:var(--accent)">0đ</span></div>
+            <div class="total-row">
+                <span>TỔNG:</span>
+                <span id="total-price" style="color:var(--accent)">0đ</span>
+            </div>
             <div class="btn-group">
-                <button class="btn-pay" onclick="checkout()">CHỐT ĐƠN & LƯU</button>
+                <button class="btn-pay" onclick="checkout()">CHỐT ĐƠN & XÓA</button>
                 <button class="btn-clear" onclick="clearAll()">XÓA HẾT</button>
-                <button class="btn-print" onclick="window.print()">IN BILL</button>
+                <button class="btn-download" onclick="downloadFullBill()">TẢI ẢNH BILL</button>
             </div>
         </div>
     </div>
 
     <script>
         const menuData = {
-            "TRÀ SỮA": [
-                {name:"Trà Sữa Matcha",price:25000},{name:"Trà Sữa Socola",price:25000},{name:"Trà Sữa Dark Socola",price:28000},{name:"Trà Sữa Thái Xanh",price:25000},{name:"Trà Sữa Khoai Môn",price:25000},{name:"Trà Sữa Hạt Dẻ",price:25000},{name:"Olong Sữa",price:20000},{name:"TS Wao (Full)",price:25000},{name:"Trà Sữa Hạt Đắc",price:20000},{name:"TS Trân Châu T/Đ",price:20000},{name:"Trà Sữa Nguyên Lá",price:19000}
-            ],
-            "TRÀ TRÁI CÂY": [
-                {name:"Olong Sen Nhãn",price:25000},{name:"Long Nhãn Quế Hoa",price:28000},{name:"Sen Vàng Machiato",price:25000},{name:"Olong Dâu Tằm",price:25000},{name:"Olong Chanh Leo",price:25000},{name:"Olong Chanh Bạc Hà",price:2000},{name:"Trà Đào",price:25000},{name:"Trà Đào Cam Sả",price:25000},{name:"Hồng Trà Dâu Tây",price:25000},{name:"Hồng Trà Vải",price:25000},{name:"Hồng Trà Trân Châu",price:20000},{name:"Trà Lài Đặc Thơm",price:25000},{name:"Lục Trà Mãng Cầu",price:25000},{name:"Trà Tắc Xí Muội",price:15000},{name:"Mãng Cầu Hubicus",price:28000},{name:"Trà Đào Hubicus",price:28000},{name:"Trà Hubicus",price:25000}
-            ],
-            "CÀ PHÊ": [
-                {name:"Cà Phê Đen",price:15000},{name:"Cà Phê Sữa",price:20000},{name:"CF Kem Muối",price:25000},{name:"CF Blue Cheese",price:20000},{name:"Bạc Xỉu",price:20000},{name:"Bạc Xỉu PM Kem",price:20000},{name:"Bạc Xỉu PM Cheese",price:25000},{name:"Cacao Sữa",price:20000},{name:"Cacao Kem Cheese",price:25000},{name:"Phindi Hạnh Nhân",price:25000}
-            ],
-            "KEM CHEESE": [
-                {name:"Matcha Cheese",price:25000},{name:"Hồng Trà Cheese",price:25000},{name:"Trà Sữa Cheese",price:25000},{name:"Olong Sữa Cheese",price:25000},{name:"Trà Đào Cheese",price:25000}
-            ],
-            "YAOURT/SODA": [
-                {name:"Yaourt Đặc Thơm",price:20000},{name:"Yaourt Việt Quất",price:20000},{name:"Yaourt Dâu Tây",price:20000},{name:"Soda Bạc Hà",price:20000},{name:"Soda Blue",price:20000},{name:"Soda Dâu Tằm",price:20000}
-            ],
-            "SỮA TƯƠI/LATTE": [
-                {name:"Sữa Tươi TC ĐĐ",price:25000},{name:"Sữa Tươi Hạt Đắc",price:25000},{name:"Sữa Tươi Sương Sáo",price:25000},{name:"Sữa Tươi Cacao Latte",price:25000},{name:"Khoai Môn Latte",price:25000}
-            ],
-            "TOPPING": [
-                {name:"Trân Châu T/Đ",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ Củ Năng",price:5000},{name:"Khúc Bạch Tầng",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Hạt Đắc",price:6000},{name:"Sương Sáo",price:5000},{name:"Pudding",price:5000}
-            ]
+            "TRÀ SỮA": [{name:"Trà Sữa Matcha",price:25000},{name:"Trà Sữa Socola",price:25000},{name:"Trà Sữa Dark Socola",price:28000},{name:"Trà Sữa Thái Xanh",price:25000},{name:"Trà Sữa Khoai Môn",price:25000},{name:"Trà Sữa Hạt Dẻ",price:25000},{name:"Olong Sữa",price:20000},{name:"TS Wao (Full)",price:25000},{name:"Trà Sữa Hạt Đắc",price:20000},{name:"TS Trân Châu T/Đ",price:20000},{name:"Trà Sữa Nguyên Lá",price:19000}],
+            "TRÀ TRÁI CÂY": [{name:"Olong Sen Nhãn",price:25000},{name:"Long Nhãn Quế Hoa",price:28000},{name:"Sen Vàng Machiato",price:25000},{name:"Olong Dâu Tằm",price:25000},{name:"Olong Chanh Leo",price:25000},{name:"Trà Đào Cam Sả",price:25000},{name:"Trà Tắc Xí Muội",price:15000},{name:"Mãng Cầu Hubicus",price:28000}],
+            "CÀ PHÊ": [{name:"Cà Phê Đen",price:15000},{name:"Cà Phê Sữa",price:20000},{name:"CF Kem Muối",price:25000},{name:"CF Blue Cheese",price:20000},{name:"Bạc Xỉu",price:20000},{name:"Cacao Sữa",price:20000}],
+            "TOPPING": [{name:"Trân Châu",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ",price:5000},{name:"Khúc Bạch",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Sương Sáo",price:5000}]
         };
 
         let currentOrder = [];
@@ -114,9 +105,7 @@
                 <button class="category-btn ${cat === currentCat ? 'active' : ''}" onclick="switchCat('${cat}')">${cat}</button>
             `).join('');
         }
-
         function switchCat(cat) { currentCat = cat; renderCategories(); renderMenu(); }
-
         function renderMenu() {
             document.getElementById('menu-grid').innerHTML = menuData[currentCat].map(item => `
                 <div class="item-card" onclick="addToOrder('${item.name}', ${item.price})">
@@ -124,48 +113,95 @@
                 </div>
             `).join('');
         }
-
         function addCustomItem() {
-            const name = prompt("Nhập tên món ngoài menu:");
+            const name = prompt("Tên món ngoài menu:");
             if (!name) return;
-            const price = parseInt(prompt("Nhập giá tiền:"));
+            const price = parseInt(prompt("Giá tiền:"));
             if (isNaN(price)) return;
             addToOrder(name, price);
         }
-
         function addToOrder(name, price) {
             const existing = currentOrder.find(i => i.name === name);
             if (existing) { existing.qty++; } else { currentOrder.push({ name, price, qty: 1 }); }
             renderOrder();
         }
-
         function updateQty(name, delta) {
             const item = currentOrder.find(i => i.name === name);
             if (item) { item.qty += delta; if (item.qty <= 0) currentOrder = currentOrder.filter(i => i.name !== name); }
             renderOrder();
         }
-
         function renderOrder() {
             const list = document.getElementById('order-list');
             let total = 0;
             list.innerHTML = currentOrder.map(item => {
                 total += item.price * item.qty;
                 return `<div class="order-item">
-                    <div style="flex:1"><b>${item.name}</b></div>
-                    <div style="display:flex; align-items:center; gap:8px; margin:0 10px">
+                    <div style="flex:1"><b>${item.name}</b><br><small>${item.price.toLocaleString()}đ</small></div>
+                    <div class="qty-controls">
                         <button class="btn-qty" onclick="updateQty('${item.name}', -1)">-</button>
                         <span>${item.qty}</span>
                         <button class="btn-qty" onclick="updateQty('${item.name}', 1)">+</button>
                     </div>
-                    <div style="width:65px; text-align:right"><b>${(item.price * item.qty).toLocaleString()}</b></div>
+                    <div style="width:70px; text-align:right"><b>${(item.price * item.qty).toLocaleString()}</b></div>
                 </div>`;
             }).join('');
             document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
-            list.scrollTop = list.scrollHeight;
+            document.getElementById('bill-container').scrollTop = document.getElementById('bill-container').scrollHeight;
+        }
+
+        // HÀM CHỤP TOÀN BỘ BILL KỂ CẢ KHI CÓ CUỘN TRANG
+        async function downloadFullBill() {
+            if (currentOrder.length === 0) { alert("Bill trống!"); return; }
+            
+            // 1. Tạo bản sao của phần Header + List món
+            const header = document.querySelector('.order-header').cloneNode(true);
+            const list = document.getElementById('order-list').cloneNode(true);
+            const totalVal = document.getElementById('total-price').innerText;
+
+            // 2. Tạo khung chứa ảo để chụp ảnh
+            const offscreenBill = document.createElement('div');
+            offscreenBill.style.width = "350px";
+            offscreenBill.style.background = "white";
+            offscreenBill.style.padding = "10px";
+            offscreenBill.style.position = "absolute";
+            offscreenBill.style.top = "-9999px";
+            
+            // 3. Xử lý UI cho bản sao (loại bỏ nút cộng trừ khi lên ảnh)
+            list.querySelectorAll('.qty-controls').forEach(ctrl => {
+                const span = ctrl.querySelector('span').innerText;
+                ctrl.innerHTML = `x${span}`; // Chỉ hiện số lượng x2, x3...
+            });
+
+            // 4. Thêm tổng tiền vào cuối bản sao
+            const footer = document.createElement('div');
+            footer.innerHTML = `
+                <div style="display:flex; justify-content:space-between; padding: 15px 0; border-top: 2px dashed #000; font-size: 20px; font-weight:bold; margin-top:10px">
+                    <span>TỔNG CỘNG:</span><span>${totalVal}</span>
+                </div>
+                <div style="text-align:center; padding-top: 10px; font-size: 12px; border-top: 1px solid #eee">Cảm ơn quý khách!</div>
+            `;
+
+            offscreenBill.appendChild(header);
+            offscreenBill.appendChild(list);
+            offscreenBill.appendChild(footer);
+            document.body.appendChild(offscreenBill);
+
+            // 5. Tiến hành chụp ảnh bản sao ẩn
+            try {
+                const canvas = await html2canvas(offscreenBill, { scale: 2, useCORS: true });
+                const link = document.createElement('a');
+                link.download = `Bill_${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            } catch (err) {
+                alert("Lỗi chụp ảnh: " + err);
+            } finally {
+                document.body.removeChild(offscreenBill);
+            }
         }
 
         function clearAll() { if(confirm("Xóa đơn?")) { currentOrder = []; renderOrder(); } }
-        function checkout() { if (currentOrder.length === 0) return; alert("✅ Đã chốt đơn!"); currentOrder = []; renderOrder(); }
+        function checkout() { if (currentOrder.length === 0) return; alert("✅ Đã chốt!"); currentOrder = []; renderOrder(); }
         function updateTime() { document.getElementById('datetime').innerText = new Date().toLocaleString('vi-VN'); }
 
         renderCategories(); renderMenu(); renderOrder();
