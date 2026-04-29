@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QUẠO HOUSE - HỆ THỐNG POS</title>
+    <title>QUẠO HOUSE POS - FULL FIX</title>
     <style>
-        :root {
-            --primary: #4CAF50;
-            --accent: #e67e22;
-            --bg: #f0f2f5;
-        }
-
+        :root { --primary: #4CAF50; --accent: #e67e22; --bg: #f0f2f5; }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body { 
@@ -18,118 +13,66 @@
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
+            height: 100dvh; /* Fix lỗi mất khung trên mobile */
             background: var(--bg); 
             overflow: hidden; 
         }
 
-        /* KHU VỰC MENU (TRÊN) */
-        .menu-section { 
-            height: 55%; 
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .categories { 
-            display: flex; gap: 8px; overflow-x: auto; 
-            padding-bottom: 10px; flex-shrink: 0;
-            scrollbar-width: none;
-        }
+        /* MENU SECTION */
+        .menu-section { height: 50%; display: flex; flex-direction: column; padding: 10px; background: #fff; z-index: 10; }
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; flex-shrink: 0; scrollbar-width: none; }
         .categories::-webkit-scrollbar { display: none; }
-
-        .category-btn { 
-            background: #fdfdfd; border: 1px solid #ddd; padding: 10px 15px; 
-            border-radius: 20px; white-space: nowrap; font-size: 13px; font-weight: bold; 
-        }
+        
+        .category-btn { background: #fdfdfd; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px; white-space: nowrap; font-size: 13px; font-weight: bold; }
         .category-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-add-custom { background: #6c5ce7; color: white; border: none; }
 
-        .items-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
-            gap: 8px; 
-            overflow-y: auto; 
-            flex-grow: 1;
-        }
-        .item-card { 
-            background: #fff; padding: 12px 5px; border-radius: 8px; 
-            text-align: center; border: 1px solid #eee;
-            border-bottom: 3px solid #8BC34A;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .item-card:active { background: #f0f0f0; }
-        .item-card h4 { font-size: 11px; color: #333; margin-bottom: 4px; height: 30px; overflow: hidden; }
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; overflow-y: auto; flex-grow: 1; }
+        .item-card { background: #fff; padding: 10px 5px; border-radius: 8px; text-align: center; border: 1px solid #eee; border-bottom: 3px solid #8BC34A; }
+        .item-card h4 { font-size: 11px; height: 28px; overflow: hidden; margin-bottom: 4px; }
         .item-card b { color: var(--accent); font-size: 13px; }
 
-        /* KHU VỰC HÓA ĐƠN (DƯỚI) */
-        .order-section { 
-            height: 45%; 
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            border-top: 2px solid #ddd;
-        }
+        /* ORDER SECTION */
+        .order-section { height: 50%; display: flex; flex-direction: column; background: #fff; border-top: 2px solid #ccc; }
+        .order-header { padding: 8px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .order-list { flex: 1; overflow-y: auto; padding: 0 15px; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
 
-        .order-header { padding: 10px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        
-        .order-list { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 0 15px;
-            background: #fff;
-        }
+        /* BOTTOM AREA */
+        .total-area { padding: 10px 15px; border-top: 2px solid #eee; background: #fafafa; flex-shrink: 0; }
+        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 8px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .btn-pay { background: var(--primary); color: white; padding: 12px; border: none; border-radius: 5px; font-weight: bold; grid-column: span 2; font-size: 16px; }
+        .btn-clear { background: #ff7675; color: white; border: none; padding: 8px; border-radius: 5px; }
+        .btn-print { background: #0984e3; color: white; border: none; padding: 8px; border-radius: 5px; }
+        .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ccc; background: #fff; }
 
-        .order-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px;
-        }
-
-        .qty-controls { display: flex; align-items: center; gap: 10px; }
-        .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; }
-
-        /* TỔNG TIỀN & NÚT CHỐT */
-        .total-area { 
-            padding: 12px 15px; 
-            border-top: 2px solid #eee;
-            background: #fafafa;
-        }
-
-        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn-pay { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; font-weight: bold; grid-column: span 2; font-size: 17px; }
-        .btn-clear { background: #ff7675; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 13px; }
-        .btn-print { background: #0984e3; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 13px; }
-
-        /* Giao diện máy tính hoặc xoay ngang */
+        /* PC / Landscape */
         @media (min-width: 768px) {
             body { flex-direction: row; }
-            .menu-section { height: 100vh; width: 60%; border-right: 2px solid #ddd; }
-            .order-section { height: 100vh; width: 40%; }
+            .menu-section { height: 100dvh; width: 60%; border-right: 2px solid #ddd; }
+            .order-section { height: 100dvh; width: 40%; }
         }
     </style>
 </head>
 <body>
 
     <div class="menu-section">
-        <div class="categories" id="categories"></div>
+        <div class="categories">
+            <button class="category-btn btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
+            <div id="categories-list" style="display:flex; gap:8px;"></div>
+        </div>
         <div class="items-grid" id="menu-grid"></div>
     </div>
 
     <div class="order-section">
         <div class="order-header">
-            <h2 style="color:var(--primary); font-size: 18px;">QUẠO HOUSE</h2>
-            <small id="datetime" style="font-size: 11px; color: #666;"></small>
+            <b style="color:var(--primary)">QUẠO HOUSE</b>
+            <small id="datetime" style="font-size: 10px;"></small>
         </div>
-        
         <div class="order-list" id="order-list"></div>
-
         <div class="total-area">
-            <div class="total-row">
-                <span>Tổng:</span>
-                <span id="total-price" style="color:var(--accent)">0đ</span>
-            </div>
+            <div class="total-row"><span>Tổng:</span><span id="total-price" style="color:var(--accent)">0đ</span></div>
             <div class="btn-group">
                 <button class="btn-pay" onclick="checkout()">CHỐT ĐƠN & LƯU</button>
                 <button class="btn-clear" onclick="clearAll()">XÓA HẾT</button>
@@ -140,122 +83,76 @@
 
     <script>
         const menuData = {
-            "TRÀ SỮA": [
-                {name:"Trà Sữa Matcha",price:25000},{name:"Trà Sữa Socola",price:25000},{name:"Trà Sữa Dark Socola",price:28000},{name:"Trà Sữa Thái Xanh",price:25000},{name:"Trà Sữa Khoai Môn",price:25000},{name:"Trà Sữa Hạt Dẻ",price:25000},{name:"Olong Sữa",price:20000},{name:"TS Wao (Full)",price:25000},{name:"Trà Sữa Hạt Đắc",price:20000},{name:"TS Trân Châu T/Đ",price:20000},{name:"Trà Sữa Nguyên Lá",price:19000}
-            ],
-            "TRÀ TRÁI CÂY": [
-                {name:"Olong Sen Nhãn",price:25000},{name:"Long Nhãn Quế Hoa",price:28000},{name:"Sen Vàng Machiato",price:25000},{name:"Olong Dâu Tằm",price:25000},{name:"Olong Chanh Leo",price:25000},{name:"Olong Chanh Bạc Hà",price:2000},{name:"Trà Đào",price:25000},{name:"Trà Đào Cam Sả",price:25000},{name:"Hồng Trà Dâu Tây",price:25000},{name:"Hồng Trà Vải",price:25000},{name:"Hồng Trà Trân Châu",price:20000},{name:"Trà Lài Đặc Thơm",price:25000},{name:"Lục Trà Mãng Cầu",price:25000},{name:"Trà Tắc Xí Muội",price:15000},{name:"Mãng Cầu Hubicus",price:28000},{name:"Trà Đào Hubicus",price:28000},{name:"Trà Hubicus",price:25000}
-            ],
-            "CÀ PHÊ": [
-                {name:"Cà Phê Đen",price:15000},{name:"Cà Phê Sữa",price:20000},{name:"CF Kem Muối",price:25000},{name:"CF Blue Cheese",price:20000},{name:"Bạc Xỉu",price:20000},{name:"Bạc Xỉu PM Kem",price:20000},{name:"Bạc Xỉu PM Cheese",price:25000},{name:"Cacao Sữa",price:20000},{name:"Cacao Kem Cheese",price:25000},{name:"Phindi Hạnh Nhân",price:25000}
-            ],
-            "KEM CHEESE": [
-                {name:"Matcha Cheese",price:25000},{name:"Hồng Trà Cheese",price:25000},{name:"Trà Sữa Cheese",price:25000},{name:"Olong Sữa Cheese",price:25000},{name:"Trà Đào Cheese",price:25000}
-            ],
-            "YAOURT/SODA": [
-                {name:"Yaourt Đặc Thơm",price:20000},{name:"Yaourt Việt Quất",price:20000},{name:"Yaourt Dâu Tây",price:20000},{name:"Soda Bạc Hà",price:20000},{name:"Soda Blue",price:20000},{name:"Soda Dâu Tằm",price:20000}
-            ],
-            "SỮA TƯƠI/LATTE": [
-                {name:"Sữa Tươi TC ĐĐ",price:25000},{name:"Sữa Tươi Hạt Đắc",price:25000},{name:"Sữa Tươi Sương Sáo",price:25000},{name:"Sữa Tươi Cacao Latte",price:25000},{name:"Khoai Môn Latte",price:25000}
-            ],
-            "TOPPING": [
-                {name:"Trân Châu T/Đ",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ Củ Năng",price:5000},{name:"Khúc Bạch Tầng",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Hạt Đắc",price:6000},{name:"Sương Sáo",price:5000},{name:"Pudding",price:5000}
-            ]
+            "TRÀ SỮA": [{name:"Trà Sữa Matcha",price:25000},{name:"Trà Sữa Socola",price:25000},{name:"Trà Sữa Dark Socola",price:28000},{name:"Trà Sữa Thái Xanh",price:25000},{name:"Trà Sữa Khoai Môn",price:25000},{name:"Trà Sữa Hạt Dẻ",price:25000},{name:"Olong Sữa",price:20000},{name:"TS Wao (Full)",price:25000},{name:"Trà Sữa Hạt Đắc",price:20000},{name:"TS Trân Châu T/Đ",price:20000},{name:"Trà Sữa Nguyên Lá",price:19000}],
+            "TRÀ TRÁI CÂY": [{name:"Olong Sen Nhãn",price:25000},{name:"Long Nhãn Quế Hoa",price:28000},{name:"Sen Vàng Machiato",price:25000},{name:"Olong Dâu Tằm",price:25000},{name:"Olong Chanh Leo",price:25000},{name:"Trà Đào",price:25000},{name:"Trà Đào Cam Sả",price:25000},{name:"Hồng Trà Dâu Tây",price:25000},{name:"Hồng Trà Vải",price:25000},{name:"Trà Tắc Xí Muội",price:15000},{name:"Mãng Cầu Hubicus",price:28000}],
+            "CÀ PHÊ": [{name:"Cà Phê Đen",price:15000},{name:"Cà Phê Sữa",price:20000},{name:"CF Kem Muối",price:25000},{name:"CF Blue Cheese",price:20000},{name:"Bạc Xỉu",price:20000},{name:"Cacao Sữa",price:20000},{name:"Phindi Hạnh Nhân",price:25000}],
+            "TOPPING": [{name:"Trân Châu",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ",price:5000},{name:"Khúc Bạch",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Sương Sáo",price:5000}]
         };
 
         let currentOrder = [];
         let currentCat = "TRÀ SỮA";
 
-        function init() {
-            renderCategories();
-            renderMenu();
-            updateTime();
-            setInterval(updateTime, 1000);
-            renderOrder();
-        }
-
         function renderCategories() {
-            document.getElementById('categories').innerHTML = Object.keys(menuData).map(cat => `
+            document.getElementById('categories-list').innerHTML = Object.keys(menuData).map(cat => `
                 <button class="category-btn ${cat === currentCat ? 'active' : ''}" onclick="switchCat('${cat}')">${cat}</button>
             `).join('');
         }
 
-        function switchCat(cat) {
-            currentCat = cat;
-            renderCategories();
-            renderMenu();
-        }
+        function switchCat(cat) { currentCat = cat; renderCategories(); renderMenu(); }
 
         function renderMenu() {
             document.getElementById('menu-grid').innerHTML = menuData[currentCat].map(item => `
                 <div class="item-card" onclick="addToOrder('${item.name}', ${item.price})">
-                    <h4>${item.name}</h4>
-                    <b>${item.price.toLocaleString()}đ</b>
+                    <h4>${item.name}</h4><b>${item.price.toLocaleString()}đ</b>
                 </div>
             `).join('');
         }
 
+        function addCustomItem() {
+            const name = prompt("Nhập tên món ngoài menu:");
+            if (!name) return;
+            const price = parseInt(prompt("Nhập giá tiền:"));
+            if (isNaN(price)) return;
+            addToOrder(name, price);
+        }
+
         function addToOrder(name, price) {
             const existing = currentOrder.find(i => i.name === name);
-            if (existing) { existing.qty++; } 
-            else { currentOrder.push({ name, price, qty: 1 }); }
+            if (existing) { existing.qty++; } else { currentOrder.push({ name, price, qty: 1 }); }
             renderOrder();
         }
 
         function updateQty(name, delta) {
             const item = currentOrder.find(i => i.name === name);
-            if (item) {
-                item.qty += delta;
-                if (item.qty <= 0) currentOrder = currentOrder.filter(i => i.name !== name);
-            }
+            if (item) { item.qty += delta; if (item.qty <= 0) currentOrder = currentOrder.filter(i => i.name !== name); }
             renderOrder();
         }
 
         function renderOrder() {
             const list = document.getElementById('order-list');
             let total = 0;
-            
-            if (currentOrder.length === 0) {
-                list.innerHTML = '<p style="text-align:center; color:#ccc; margin-top:30px">Chưa có món nào</p>';
-            } else {
-                list.innerHTML = currentOrder.map(item => {
-                    total += item.price * item.qty;
-                    return `
-                        <div class="order-item">
-                            <div style="flex:1"><b>${item.name}</b></div>
-                            <div class="qty-controls">
-                                <button class="btn-qty" onclick="updateQty('${item.name}', -1)">-</button>
-                                <span>${item.qty}</span>
-                                <button class="btn-qty" onclick="updateQty('${item.name}', 1)">+</button>
-                            </div>
-                            <div style="width:70px; text-align:right"><b>${(item.price * item.qty).toLocaleString()}</b></div>
-                        </div>
-                    `;
-                }).join('');
-            }
+            list.innerHTML = currentOrder.map(item => {
+                total += item.price * item.qty;
+                return `<div class="order-item">
+                    <div style="flex:1"><b>${item.name}</b></div>
+                    <div style="display:flex; align-items:center; gap:8px; margin:0 10px">
+                        <button class="btn-qty" onclick="updateQty('${item.name}', -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button class="btn-qty" onclick="updateQty('${item.name}', 1)">+</button>
+                    </div>
+                    <div style="width:65px; text-align:right"><b>${(item.price * item.qty).toLocaleString()}</b></div>
+                </div>`;
+            }).join('');
             document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
             list.scrollTop = list.scrollHeight;
         }
 
-        function clearAll() {
-            if(currentOrder.length > 0 && confirm("Xóa toàn bộ đơn hàng?")) {
-                currentOrder = [];
-                renderOrder();
-            }
-        }
+        function clearAll() { if(confirm("Xóa đơn?")) { currentOrder = []; renderOrder(); } }
+        function checkout() { if (currentOrder.length === 0) return; alert("✅ Đã chốt đơn!"); currentOrder = []; renderOrder(); }
+        function updateTime() { document.getElementById('datetime').innerText = new Date().toLocaleString('vi-VN'); }
 
-        function checkout() {
-            if (currentOrder.length === 0) return;
-            alert("✅ Chốt đơn thành công! Tổng: " + document.getElementById('total-price').innerText);
-            currentOrder = [];
-            renderOrder();
-        }
-
-        function updateTime() {
-            document.getElementById('datetime').innerText = new Date().toLocaleString('vi-VN');
-        }
-
-        init();
+        renderCategories(); renderMenu(); renderOrder();
+        setInterval(updateTime, 1000); updateTime();
     </script>
 </body>
 </html>
