@@ -35,7 +35,14 @@
         
         .order-header { padding: 15px; border-bottom: 1px dashed #ccc; text-align: center; flex-shrink: 0; }
         .order-list { padding: 10px 15px; }
-        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        /* INLINE NOTE STYLE */
+        .item-info { flex: 1; display: flex; flex-direction: column; padding-right: 5px; }
+        .name-note-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .note-input { border: none; border-bottom: 1px dashed #e67e22; padding: 2px 4px; font-size: 12px; outline: none; background: transparent; color: #e67e22; width: 100px; font-style: italic; }
+        .note-input::placeholder { color: #ccc; font-style: normal; }
+        .bill-note-text { color: #e67e22; font-weight: bold; margin-left: 4px; font-size: 13px; }
 
         /* BOTTOM AREA */
         .total-area { padding: 10px 15px; border-top: 2px solid #eee; background: #fafafa; flex-shrink: 0; }
@@ -46,7 +53,7 @@
         .btn-clear { background: #ff7675; color: white; border: none; padding: 10px; border-radius: 8px; }
         .btn-download { background: #0984e3; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
         
-        .qty-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-controls { display: flex; align-items: center; gap: 8px; margin: 0 5px; }
         .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; }
 
         @media (min-width: 768px) {
@@ -139,7 +146,7 @@
         }
         function addToOrder(name, price) {
             const existing = currentOrder.find(i => i.name === name);
-            if (existing) { existing.qty++; } else { currentOrder.push({ name, price, qty: 1 }); }
+            if (existing) { existing.qty++; } else { currentOrder.push({ name, price, qty: 1, note: "" }); }
             renderOrder();
         }
         function updateQty(name, delta) {
@@ -147,13 +154,23 @@
             if (item) { item.qty += delta; if (item.qty <= 0) currentOrder = currentOrder.filter(i => i.name !== name); }
             renderOrder();
         }
+        function updateNote(name, noteText) {
+            const item = currentOrder.find(i => i.name === name);
+            if (item) { item.note = noteText; }
+        }
         function renderOrder() {
             const list = document.getElementById('order-list');
             let total = 0;
             list.innerHTML = currentOrder.map(item => {
                 total += item.price * item.qty;
                 return `<div class="order-item">
-                    <div style="flex:1"><b>${item.name}</b><br><small>${item.price.toLocaleString()}đ</small></div>
+                    <div class="item-info">
+                        <div class="name-note-row">
+                            <b>${item.name}</b>
+                            <input type="text" class="note-input" placeholder="(ghi chú...)" value="${item.note}" oninput="updateNote('${item.name}', this.value)">
+                        </div>
+                        <small>${item.price.toLocaleString()}đ</small>
+                    </div>
                     <div class="qty-controls">
                         <button class="btn-qty" onclick="updateQty('${item.name}', -1)">-</button>
                         <span>${item.qty}</span>
@@ -163,33 +180,46 @@
                 </div>`;
             }).join('');
             document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
-            document.getElementById('bill-container').scrollTop = document.getElementById('bill-container').scrollHeight;
         }
 
-        // HÀM CHỤP TOÀN BỘ BILL KỂ CẢ KHI CÓ CUỘN TRANG
+        // HÀM CHỤP BILL ĐÃ ĐỔI GHI CHÚ THÀNH DẠNG (GHI CHÚ) NẰM CÙNG DÒNG
         async function downloadFullBill() {
             if (currentOrder.length === 0) { alert("Bill trống!"); return; }
             
-            // 1. Tạo bản sao của phần Header + List món
             const header = document.querySelector('.order-header').cloneNode(true);
             const list = document.getElementById('order-list').cloneNode(true);
             const totalVal = document.getElementById('total-price').innerText;
 
-            // 2. Tạo khung chứa ảo để chụp ảnh
             const offscreenBill = document.createElement('div');
             offscreenBill.style.width = "350px";
             offscreenBill.style.background = "white";
-            offscreenBill.style.padding = "10px";
+            offscreenBill.style.padding = "15px";
             offscreenBill.style.position = "absolute";
             offscreenBill.style.top = "-9999px";
             
-            // 3. Xử lý UI cho bản sao (loại bỏ nút cộng trừ khi lên ảnh)
-            list.querySelectorAll('.qty-controls').forEach(ctrl => {
-                const span = ctrl.querySelector('span').innerText;
-                ctrl.innerHTML = `x${span}`; // Chỉ hiện số lượng x2, x3...
+            list.querySelectorAll('.order-item').forEach(itemDiv => {
+                // Đổi nút cộng trừ thành chữ xSố Lượng
+                const ctrl = itemDiv.querySelector('.qty-controls');
+                if(ctrl) {
+                    const span = ctrl.querySelector('span').innerText;
+                    ctrl.innerHTML = `x${span}`;
+                }
+                
+                // Biến ô Input ghi chú thành chữ text dạng (Nội dung) nằm ngay sau tên món
+                const input = itemDiv.querySelector('.note-input');
+                const row = itemDiv.querySelector('.name-note-row');
+                if(input && row) {
+                    const noteText = input.value.trim();
+                    if(noteText) {
+                        const spanNote = document.createElement('span');
+                        spanNote.className = "bill-note-text";
+                        spanNote.innerText = `(${noteText})`;
+                        row.appendChild(spanNote);
+                    }
+                    input.remove(); // Xóa ô input thô đi khi lên ảnh chụp
+                }
             });
 
-            // 4. Thêm tổng tiền vào cuối bản sao
             const footer = document.createElement('div');
             footer.innerHTML = `
                 <div style="display:flex; justify-content:space-between; padding: 15px 0; border-top: 2px dashed #000; font-size: 20px; font-weight:bold; margin-top:10px">
@@ -203,7 +233,6 @@
             offscreenBill.appendChild(footer);
             document.body.appendChild(offscreenBill);
 
-            // 5. Tiến hành chụp ảnh bản sao ẩn
             try {
                 const canvas = await html2canvas(offscreenBill, { scale: 2, useCORS: true });
                 const link = document.createElement('a');
