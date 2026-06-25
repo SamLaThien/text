@@ -308,8 +308,14 @@
             {name:"Trân Châu Trắng",price:5000},{name:"Trân Châu Đen",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ Củ Năng",price:5000},{name:"Khúc Bạch Tầng",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Hạt Đắc",price:6000},{name:"Sương Sáo",price:5000},{name:"Pudding",price:5000}
         ];
 
-        let currentOrder = [];
+        // Tự động khôi phục dữ liệu giỏ hàng cũ đã lưu ở localStorage
+        let currentOrder = JSON.parse(localStorage.getItem('quao_house_cart')) || [];
         let activeItemIndex = null;
+
+        // Hàm hỗ trợ lưu giỏ hàng vào bộ nhớ trình duyệt
+        function saveCartToStorage() {
+            localStorage.setItem('quao_house_cart', JSON.stringify(currentOrder));
+        }
 
         function toggleBillModal(show) {
             const modal = document.getElementById('bill-modal');
@@ -362,6 +368,7 @@
 
         function updateNote(index, noteText) {
             currentOrder[index].note = noteText;
+            saveCartToStorage(); // Lưu ghi chú ngay khi người dùng gõ phím
         }
 
         function updateUserTag(index) {
@@ -409,6 +416,7 @@
         }
 
         function renderOrder() {
+            saveCartToStorage(); // Cập nhật lại bộ nhớ mỗi lần render giao diện giỏ hàng
             const list = document.getElementById('order-list');
             let total = 0;
             let totalQty = 0;
@@ -540,7 +548,13 @@
             }
         }
 
-        function clearAll() { if(confirm("Xóa toàn bộ đơn hiện tại?")) { currentOrder = []; renderOrder(); toggleBillModal(false); } }
+        function clearAll() { 
+            if(confirm("Xóa toàn bộ đơn hiện tại?")) { 
+                currentOrder = []; 
+                renderOrder(); 
+                toggleBillModal(false); 
+            } 
+        }
 
         renderCategorizedMenu(); 
         renderOrder();
