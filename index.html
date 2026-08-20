@@ -53,7 +53,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* KHU VỰC HIỂN THỊ ẢNH MENU GỐC */
+        /* KHU VỰC HIỂN THỊ ẢNH MENU GỐC (BẤM VÀO MỞ TAB MỚI ĐỂ ZOOM) */
         .menu-image-container {
             flex-shrink: 0;
             margin-bottom: 10px;
@@ -70,6 +70,7 @@
             object-fit: contain;
             border-radius: 6px;
             cursor: pointer;
+            display: block;
         }
 
         /* VÙNG CUỘN MENU THỨC UỐNG */
@@ -181,37 +182,6 @@
             border-radius: 20px;
         }
 
-                /* CSS cho Modal Ảnh - Giữ nguyên chiều dọc để không bị mất viền */
-        #image-modal .modal-content {
-            width: 95vw;
-            height: 90dvh;
-            max-width: 500px;
-            margin: auto;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .image-zoom-container {
-            flex: 1;
-            overflow: auto; /* Cho phép cuộn để xem chi tiết */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 10px;
-            background: #f1f5f9;
-        }
-
-        .image-zoom-container img {
-            width: 100%; /* Ảnh sẽ khớp bề ngang màn hình */
-            height: auto;
-            border-radius: 8px;
-            display: block;
-        }
-
-
         .modal-header {
             padding: 14px 16px;
             border-bottom: 1px solid #eee;
@@ -285,9 +255,11 @@
             <button class="btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
         </div>
         
-        <!-- HIỂN THỊ ẢNH MENU GỐC DƯỚI NÚT MÓN NGOÀI -->
+        <!-- HIỂN THỊ ẢNH MENU GỐC (BẤM VÀO SẼ MỞ TOÀN MÀN HÌNH ĐỂ ZOOM) -->
         <div class="menu-image-container">
-            <img src="menu.jpg" alt="Menu Quạo House" onclick="toggleImageModal(true)" title="Nhấn để phóng to ảnh gốc">
+            <a href="menu.jpg" target="_blank">
+                <img src="menu.jpg" alt="Menu Quạo House" title="Nhấn để mở toàn màn hình và phóng to">
+            </a>
         </div>
 
         <div class="menu-scroll-container" id="menu-scroll-view"></div>
@@ -299,14 +271,6 @@
         </svg>
         <div class="cart-badge" id="cart-badge">0</div>
     </button>
-
-    <!-- THAY THẾ TOÀN BỘ ĐOẠN MODAL ẢNH CŨ BẰNG ĐOẠN NÀY -->
-<div class="menu-image-container">
-    <a href="menu.jpg" target="_blank">
-        <img src="menu.jpg" alt="Menu Quạo House" title="Nhấn để mở toàn màn hình và phóng to">
-    </a>
-</div>
-
 
     <!-- MODAL GIỎ HÀNG -->
     <div class="modal-overlay" id="bill-modal">
@@ -457,17 +421,8 @@
             if (show) modal.classList.add('open'); else modal.classList.remove('open');
         }
 
-        function toggleImageModal(show) {
-            const modal = document.getElementById('image-modal');
-            if (show) modal.classList.add('open'); else modal.classList.remove('open');
-        }
-
         document.getElementById('bill-modal').addEventListener('click', function(e) {
             if(e.target === this) toggleBillModal(false);
-        });
-
-        document.getElementById('image-modal').addEventListener('click', function(e) {
-            if(e.target === this) toggleImageModal(false);
         });
         
         function renderCategorizedMenu() {
