@@ -180,12 +180,26 @@
             margin: auto 15px;
             border-radius: 20px;
         }
-        #image-modal .modal-content img {
-            width: 100%;
+                #image-modal .modal-content {
+            width: 95dvh; /* Đổi chiều rộng thành chiều cao màn hình */
+            max-width: 95vw;
             height: auto;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            max-height: 95dvh;
+            margin: auto;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
+        #image-modal .modal-content img {
+            width: 85dvh; /* Xoay kích thước để ảnh nằm vừa màn hình điện thoại */
+            height: auto;
+            transform: rotate(90deg); /* Lật ngang ảnh 90 độ */
+            transform-origin: center;
+            border-radius: 10px;
+        }
+
 
         .modal-header {
             padding: 14px 16px;
