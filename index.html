@@ -174,32 +174,43 @@
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        #topping-modal .modal-content, #image-modal .modal-content {
+        #topping-modal .modal-content {
             height: auto;
-            max-height: 85dvh;
+            max-height: 75dvh;
             margin: auto 15px;
             border-radius: 20px;
         }
-                #image-modal .modal-content {
-            width: 95dvh; /* Đổi chiều rộng thành chiều cao màn hình */
-            max-width: 95vw;
-            height: auto;
-            max-height: 95dvh;
+
+        /* MODAL ẢNH GỐC LẬT NGANG & CÓ THANH CUỘN ZOOM */
+        #image-modal .modal-content {
+            width: 95vw;
+            height: 85dvh;
+            max-width: 600px;
             margin: auto;
             border-radius: 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             overflow: hidden;
         }
-        #image-modal .modal-content img {
-            width: 85dvh; /* Xoay kích thước để ảnh nằm vừa màn hình điện thoại */
-            height: auto;
-            transform: rotate(90deg); /* Lật ngang ảnh 90 độ */
-            transform-origin: center;
-            border-radius: 10px;
+
+        .image-zoom-container {
+            flex: 1;
+            overflow: auto; /* Cho phép lướt/cuộn xem chi tiết từng vùng của ảnh */
+            background: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 10px;
         }
 
+        .image-zoom-container img {
+            width: auto;
+            height: 140vh; /* Phóng to kích thước để hiển thị rõ chi tiết các món */
+            transform: rotate(90deg); /* Lật ngang 90 độ */
+            transform-origin: center;
+            border-radius: 4px;
+        }
 
         .modal-header {
             padding: 14px 16px;
@@ -274,9 +285,9 @@
             <button class="btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
         </div>
         
-        <!-- HIỂN THỊ ẢNH MENU GỐC DƯỚI NÚT MÓN NGOÀI (Bấm vào để phóng to xem rõ hơn) -->
+        <!-- HIỂN THỊ ẢNH MENU GỐC DƯỚI NÚT MÓN NGOÀI -->
         <div class="menu-image-container">
-            <img src="menu.jpg" alt="Menu" onclick="toggleImageModal(true)" title="Nhấn để phóng to ảnh gốc">
+            <img src="menu.jpg" alt="Menu Quạo House" onclick="toggleImageModal(true)" title="Nhấn để phóng to ảnh gốc">
         </div>
 
         <div class="menu-scroll-container" id="menu-scroll-view"></div>
@@ -289,13 +300,15 @@
         <div class="cart-badge" id="cart-badge">0</div>
     </button>
 
-    <!-- MODAL HIỂN THỊ ẢNH GỐC PHÓNG TO -->
-    <div class="modal-overlay" id="image-modal" onclick="toggleImageModal(false)">
-        <div class="modal-content" onclick="event.stopPropagation()">
+    <!-- MODAL HIỂN THỊ VÀ TƯƠNG TÁC ẢNH GỐC -->
+    <div class="modal-overlay" id="image-modal">
+        <div class="modal-content">
             <div class="modal-header">
                 <button class="btn-close-modal" onclick="toggleImageModal(false)">&times;</button>
             </div>
-            <img src="menu.jpg" alt="Menu Phóng To">
+            <div class="image-zoom-container">
+                <img src="menu.jpg" alt="Menu Phóng To">
+            </div>
         </div>
     </div>
 
@@ -340,101 +353,101 @@
 
     <script>
         const menuData = {
-    "TRÀ SỮA": [
-        {name: "Trà sữa Wao", price: 25000},
-        {name: "Trà sữa thái xanh", price: 25000},
-        {name: "Trà sữa khoai môn", price: 25000},
-        {name: "Trà sữa matcha", price: 30000},
-        {name: "Trà sữa socola", price: 30000},
-        {name: "Trà sữa dark socola", price: 32000},
-        {name: "Trà sữa hạt dẻ", price: 30000},
-        {name: "Olong sữa quế hoa", price: 25000},
-        {name: "Trà sữa hạt đác", price: 22000},
-        {name: "Trà sữa trân châu trắng/đen", price: 20000},
-        {name: "Trà sữa nguyên lá", price: 19000}
-    ],
-    "TRÀ TRÁI CÂY": [
-        {name: "Olong sen nhãn", price: 27000},
-        {name: "Long nhãn quế hoa", price: 30000},
-        {name: "Trà việt quất", price: 25000},
-        {name: "Trà mãng cầu", price: 25000},
-        {name: "Mãng cầu hibisus", price: 30000},
-        {name: "Trà hibisus", price: 25000},
-        {name: "Trà lài đác thơm", price: 25000},
-        {name: "Sen vàng macchiato", price: 30000},
-        {name: "Olong dâu tằm", price: 25000},
-        {name: "Hồng trà dâu tây", price: 25000},
-        {name: "Hồng trà vải", price: 25000},
-        {name: "Trà đào", price: 25000},
-        {name: "Trà đào hibiscus", price: 30000},
-        {name: "Olong chanh leo", price: 25000},
-        {name: "Olong chanh bạc hà", price: 22000},
-        {name: "Trà đào cam sả", price: 30000},
-        {name: "Hồng trà trân châu", price: 25000},
-        {name: "Hồng trà hạt nổ", price: 25000},
-        {name: "Trà tắc xí muội", price: 20000}
-    ],
-    "MATCHA": [
-        {name: "Matcha latte", price: 25000},
-        {name: "Sữa dâu matcha latte", price: 28000},
-        {name: "Việt quất matcha latte", price: 28000},
-        {name: "Sữa dâu matcha kem chesse", price: 30000}
-    ],
-    "KEM CHESSE": [
-        {name: "Dâu sấy thăng hoa", price: 30000},
-        {name: "Hồng trà kem cheese", price: 25000},
-        {name: "Trà sữa kem cheese", price: 25000},
-        {name: "Olong sữa kem cheese", price: 25000},
-        {name: "Cacao kem cheese", price: 30000}
-    ],
-    "YAOURT": [
-        {name: "Yaourt đác thơm", price: 20000},
-        {name: "Yaourt việt quất", price: 20000},
-        {name: "Yaourt dâu tây", price: 20000},
-        {name: "Yaourt dâu tằm", price: 20000},
-        {name: "Yaourt chanh leo", price: 20000}
-    ],
-    "SỮA TƯƠI ĐƯỜNG ĐEN": [
-        {name: "Sữa tươi trân châu đường đen", price: 25000},
-        {name: "Sữa tươi hạt đác đường đen", price: 25000},
-        {name: "Sữa tươi sương sáo đường đen", price: 25000}
-    ],
-    "SODA": [
-        {name: "Soda bạc hà", price: 20000},
-        {name: "Soda blue", price: 20000},
-        {name: "Soda việt quất", price: 20000},
-        {name: "Soda dâu tây", price: 20000},
-        {name: "Soda dâu tằm", price: 20000},
-        {name: "Soda chanh leo", price: 20000}
-    ],
-    "CAFE": [
-        {name: "Cafe đen", price: 15000},
-        {name: "Cafe sữa", price: 20000},
-        {name: "Cafe kem muối", price: 20000},
-        {name: "Cafe blue kem cheese", price: 25000},
-        {name: "Bạc xỉu", price: 20000},
-        {name: "Sữa tươi sương sáo cafe", price: 25000},
-        {name: "Bạc xỉu phô mai (bò cười)", price: 25000},
-        {name: "Bạc xỉu kem cheese", price: 25000},
-        {name: "Cacao sữa", price: 20000},
-        {name: "Cacao kem cheese", price: 25000}
-    ]
-};
+            "TRÀ SỮA": [
+                {name: "Trà sữa Wao", price: 25000},
+                {name: "Trà sữa thái xanh", price: 25000},
+                {name: "Trà sữa khoai môn", price: 25000},
+                {name: "Trà sữa matcha", price: 30000},
+                {name: "Trà sữa socola", price: 30000},
+                {name: "Trà sữa dark socola", price: 32000},
+                {name: "Trà sữa hạt dẻ", price: 30000},
+                {name: "Olong sữa quế hoa", price: 25000},
+                {name: "Trà sữa hạt đác", price: 22000},
+                {name: "Trà sữa trân châu trắng/đen", price: 20000},
+                {name: "Trà sữa nguyên lá", price: 19000}
+            ],
+            "TRÀ TRÁI CÂY": [
+                {name: "Olong sen nhãn", price: 27000},
+                {name: "Long nhãn quế hoa", price: 30000},
+                {name: "Trà việt quất", price: 25000},
+                {name: "Trà mãng cầu", price: 25000},
+                {name: "Mãng cầu hibisus", price: 30000},
+                {name: "Trà hibisus", price: 25000},
+                {name: "Trà lài đác thơm", price: 25000},
+                {name: "Sen vàng macchiato", price: 30000},
+                {name: "Olong dâu tằm", price: 25000},
+                {name: "Hồng trà dâu tây", price: 25000},
+                {name: "Hồng trà vải", price: 25000},
+                {name: "Trà đào", price: 25000},
+                {name: "Trà đào hibiscus", price: 30000},
+                {name: "Olong chanh leo", price: 25000},
+                {name: "Olong chanh bạc hà", price: 22000},
+                {name: "Trà đào cam sả", price: 30000},
+                {name: "Hồng trà trân châu", price: 25000},
+                {name: "Hồng trà hạt nổ", price: 25000},
+                {name: "Trà tắc xí muội", price: 20000}
+            ],
+            "MATCHA": [
+                {name: "Matcha latte", price: 25000},
+                {name: "Sữa dâu matcha latte", price: 28000},
+                {name: "Việt quất matcha latte", price: 28000},
+                {name: "Sữa dâu matcha kem chesse", price: 30000}
+            ],
+            "KEM CHESSE": [
+                {name: "Dâu sấy thăng hoa", price: 30000},
+                {name: "Hồng trà kem cheese", price: 25000},
+                {name: "Trà sữa kem cheese", price: 25000},
+                {name: "Olong sữa kem cheese", price: 25000},
+                {name: "Cacao kem cheese", price: 30000}
+            ],
+            "YAOURT": [
+                {name: "Yaourt đác thơm", price: 20000},
+                {name: "Yaourt việt quất", price: 20000},
+                {name: "Yaourt dâu tây", price: 20000},
+                {name: "Yaourt dâu tằm", price: 20000},
+                {name: "Yaourt chanh leo", price: 20000}
+            ],
+            "SỮA TƯƠI ĐƯỜNG ĐEN": [
+                {name: "Sữa tươi trân châu đường đen", price: 25000},
+                {name: "Sữa tươi hạt đác đường đen", price: 25000},
+                {name: "Sữa tươi sương sáo đường đen", price: 25000}
+            ],
+            "SODA": [
+                {name: "Soda bạc hà", price: 20000},
+                {name: "Soda blue", price: 20000},
+                {name: "Soda việt quất", price: 20000},
+                {name: "Soda dâu tây", price: 20000},
+                {name: "Soda dâu tằm", price: 20000},
+                {name: "Soda chanh leo", price: 20000}
+            ],
+            "CAFE": [
+                {name: "Cafe đen", price: 15000},
+                {name: "Cafe sữa", price: 20000},
+                {name: "Cafe kem muối", price: 20000},
+                {name: "Cafe blue kem cheese", price: 25000},
+                {name: "Bạc xỉu", price: 20000},
+                {name: "Sữa tươi sương sáo cafe", price: 25000},
+                {name: "Bạc xỉu phô mai (bò cười)", price: 25000},
+                {name: "Bạc xỉu kem cheese", price: 25000},
+                {name: "Cacao sữa", price: 20000},
+                {name: "Cacao kem cheese", price: 25000}
+            ]
+        };
 
-const toppingMenu = [
-    {name: "Bánh flan", price: 5000},
-    {name: "Trân châu trắng/đen", price: 5000},
-    {name: "Thạch quế hoa", price: 5000},
-    {name: "Thạch trà", price: 5000},
-    {name: "Thạch vải", price: 5000},
-    {name: "Hạt nổ củ năng", price: 8000},
-    {name: "Khúc bạch tầng", price: 7000},
-    {name: "Phô mai tươi", price: 5000},
-    {name: "Thạch dừa sợi", price: 5000},
-    {name: "Hạt đác", price: 8000},
-    {name: "Rau câu chân mèo", price: 6000},
-    {name: "Sương sáo", price: 5000}
-];
+        const toppingMenu = [
+            {name: "Bánh flan", price: 5000},
+            {name: "Trân châu trắng/đen", price: 5000},
+            {name: "Thạch quế hoa", price: 5000},
+            {name: "Thạch trà", price: 5000},
+            {name: "Thạch vải", price: 5000},
+            {name: "Hạt nổ củ năng", price: 8000},
+            {name: "Khúc bạch tầng", price: 7000},
+            {name: "Phô mai tươi", price: 5000},
+            {name: "Thạch dừa sợi", price: 5000},
+            {name: "Hạt đác", price: 8000},
+            {name: "Rau câu chân mèo", price: 6000},
+            {name: "Sương sáo", price: 5000}
+        ];
 
         let currentOrder = JSON.parse(localStorage.getItem('quao_house_cart')) || [];
         let activeItemIndex = null;
@@ -455,6 +468,10 @@ const toppingMenu = [
 
         document.getElementById('bill-modal').addEventListener('click', function(e) {
             if(e.target === this) toggleBillModal(false);
+        });
+
+        document.getElementById('image-modal').addEventListener('click', function(e) {
+            if(e.target === this) toggleImageModal(false);
         });
         
         function renderCategorizedMenu() {
