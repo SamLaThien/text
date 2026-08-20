@@ -284,29 +284,102 @@
 
     <script>
         const menuData = {
-            "TRÀ SỮA": [
-                {name:"Trà Sữa Matcha",price:25000},{name:"Trà Sữa Socola",price:25000},{name:"Trà Sữa Dark Socola",price:28000},{name:"Trà Sữa Thái Xanh",price:25000},{name:"Trà Sữa Khoai Môn",price:25000},{name:"Trà Sữa Hạt Dẻ",price:25000},{name:"Olong Sữa",price:20000},{name:"TS Wao (Full)",price:25000},{name:"Trà Sữa Hạt Đác",price:20000},{name:"TS Trân Châu Trắng",price:20000} ,{name:"TS Trân Châu Đen",price:20000},{name:"Trà Sữa Nguyên Lá",price:19000}
-            ],
-            "TRÀ TRÁI CÂY": [
-                {name:"Olong Sen Nhãn",price:25000},{name:"Long Nhãn Quế Hoa",price:28000},{name:"Sen Vàng Machiato",price:25000},{name:"Olong Dâu Tằm",price:25000},{name:"Olong Chanh Leo",price:25000},{name:"Olong Chanh Bạc Hà",price:20000},{name:"Trà Đào",price:25000},{name:"Trà Đào Cam Sả",price:25000},{name:"Hồng Trà Dâu Tây (Trà Dâu)",price:25000},{name:"Hồng Trà Vải",price:25000},{name:"Hồng Trà Trân Châu",price:20000},{name:"Trà Lài Đác Thơm",price:25000},{name:"Lục Trà Mãng Cầu",price:25000},{name:"Trà Tắc Xí Muội Nhỏ",price:15000},{name:"Trà Tắc Xí Muội Lớn",price:20000},{name:"Mãng Cầu Hubicus",price:28000},{name:"Trà Đào Hubicus",price:28000},{name:"Trà Hubicus",price:25000}
-            ],
-            "CÀ PHÊ": [
-                {name:"Cà Phê Đen",price:15000},{name:"Cà Phê Sữa",price:20000},{name:"CF Kem Muối",price:25000},{name:"CF Blue Cheese",price:20000},{name:"Bạc Xỉu",price:20000},{name:"Bạc Xỉu PM Kem",price:20000},{name:"Bạc Xỉu PM Cheese",price:25000},{name:"Cacao Sữa",price:20000},{name:"Cacao Kem Cheese",price:25000},{name:"Phindi Hạnh Nhân",price:25000}
-            ],
-            "KEM CHEESE": [
-                {name:"Matcha Cheese",price:25000},{name:"Hồng Trà Cheese",price:25000},{name:"Trà Sữa Cheese",price:25000},{name:"Olong Sữa Cheese",price:25000},{name:"Trà Đào Cheese",price:25000}
-            ],
-            "YAOURT/SODA": [
-                {name:"Yaourt Đác Thơm",price:20000},{name:"Yaourt Việt Quất",price:20000},{name:"Yaourt Dâu Tây",price:20000},{name:"Soda Bạc Hà",price:20000},{name:"Soda Blue",price:20000},{name:"Soda Dâu Tằm",price:20000}
-            ],
-            "SỮA TƯƠI/LATTE": [
-                {name:"Sữa Tươi Trân Châu Đường Đen",price:25000},{name:"Sữa Tươi Hạt Đác",price:25000},{name:"Sữa Tươi Sương Sáo",price:25000},{name:"Sữa Tươi Cacao Latte",price:25000},{name:"Khoai Môn Latte",price:20000}
-            ]
-        };
+    "TRÀ SỮA": [
+        {name: "Trà sữa Wao", price: 25000},
+        {name: "Trà sữa thái xanh", price: 25000},
+        {name: "Trà sữa khoai môn", price: 25000},
+        {name: "Trà sữa matcha", price: 30000},
+        {name: "Trà sữa socola", price: 30000},
+        {name: "Trà sữa dark socola", price: 32000},
+        {name: "Trà sữa hạt dẻ", price: 30000},
+        {name: "Olong sữa quế hoa", price: 25000},
+        {name: "Trà sữa hạt đác", price: 22000},
+        {name: "Trà sữa trân châu trắng/đen", price: 20000},
+        {name: "Trà sữa nguyên lá", price: 19000}
+    ],
+    "TRÀ TRÁI CÂY": [
+        {name: "Olong sen nhãn", price: 27000},
+        {name: "Long nhãn quế hoa", price: 30000},
+        {name: "Trà việt quất", price: 25000},
+        {name: "Trà mãng cầu", price: 25000},
+        {name: "Mãng cầu hibisus", price: 30000},
+        {name: "Trà hibisus", price: 25000},
+        {name: "Trà lài đác thơm", price: 25000},
+        {name: "Sen vàng macchiato", price: 30000},
+        {name: "Olong dâu tằm", price: 25000},
+        {name: "Hồng trà dâu tây", price: 25000},
+        {name: "Hồng trà vải", price: 25000},
+        {name: "Trà đào", price: 25000},
+        {name: "Trà đào hibiscus", price: 30000},
+        {name: "Olong chanh leo", price: 25000},
+        {name: "Olong chanh bạc hà", price: 22000},
+        {name: "Trà đào cam sả", price: 30000},
+        {name: "Hồng trà trân châu", price: 25000},
+        {name: "Hồng trà hạt nổ", price: 25000},
+        {name: "Trà tắc xí muội", price: 20000}
+    ],
+    "MATCHA": [
+        {name: "Matcha latte", price: 25000},
+        {name: "Sữa dâu matcha latte", price: 28000},
+        {name: "Việt quất matcha latte", price: 28000},
+        {name: "Sữa dâu matcha kem chesse", price: 30000}
+    ],
+    "KEM CHESSE": [
+        {name: "Dâu sấy thăng hoa", price: 30000},
+        {name: "Hồng trà kem cheese", price: 25000},
+        {name: "Trà sữa kem cheese", price: 25000},
+        {name: "Olong sữa kem cheese", price: 25000},
+        {name: "Cacao kem cheese", price: 30000}
+    ],
+    "YAOURT": [
+        {name: "Yaourt đác thơm", price: 20000},
+        {name: "Yaourt việt quất", price: 20000},
+        {name: "Yaourt dâu tây", price: 20000},
+        {name: "Yaourt dâu tằm", price: 20000},
+        {name: "Yaourt chanh leo", price: 20000}
+    ],
+    "SỮA TƯƠI ĐƯỜNG ĐEN": [
+        {name: "Sữa tươi trân châu đường đen", price: 25000},
+        {name: "Sữa tươi hạt đác đường đen", price: 25000},
+        {name: "Sữa tươi sương sáo đường đen", price: 25000}
+    ],
+    "SODA": [
+        {name: "Soda bạc hà", price: 20000},
+        {name: "Soda blue", price: 20000},
+        {name: "Soda việt quất", price: 20000},
+        {name: "Soda dâu tây", price: 20000},
+        {name: "Soda dâu tằm", price: 20000},
+        {name: "Soda chanh leo", price: 20000}
+    ],
+    "CAFE": [
+        {name: "Cafe đen", price: 15000},
+        {name: "Cafe sữa", price: 20000},
+        {name: "Cafe kem muối", price: 20000},
+        {name: "Cafe blue kem cheese", price: 25000},
+        {name: "Bạc xỉu", price: 20000},
+        {name: "Sữa tươi sương sáo cafe", price: 25000},
+        {name: "Bạc xỉu phô mai (bò cười)", price: 25000},
+        {name: "Bạc xỉu kem cheese", price: 25000},
+        {name: "Cacao sữa", price: 20000},
+        {name: "Cacao kem cheese", price: 25000}
+    ]
+};
 
-        const toppingMenu = [
-            {name:"Trân Châu Trắng",price:5000},{name:"Trân Châu Đen",price:5000},{name:"Thạch Quế Hoa",price:5000},{name:"Hạt Nổ Củ Năng",price:5000},{name:"Khúc Bạch Tầng",price:6000},{name:"Phô Mai Tươi",price:5000},{name:"Hạt Đác",price:6000},{name:"Sương Sáo",price:5000},{name:"Pudding",price:5000}
-        ];
+const toppingMenu = [
+    {name: "Bánh flan", price: 5000},
+    {name: "Trân châu trắng/đen", price: 5000},
+    {name: "Thạch quế hoa", price: 5000},
+    {name: "Thạch trà", price: 5000},
+    {name: "Thạch vải", price: 5000},
+    {name: "Hạt nổ củ năng", price: 8000},
+    {name: "Khúc bạch tầng", price: 7000},
+    {name: "Phô mai tươi", price: 5000},
+    {name: "Thạch dừa sợi", price: 5000},
+    {name: "Hạt đác", price: 8000},
+    {name: "Rau câu chân mèo", price: 6000},
+    {name: "Sương sáo", price: 5000}
+];
+
 
         // Tự động khôi phục dữ liệu giỏ hàng cũ đã lưu ở localStorage
         let currentOrder = JSON.parse(localStorage.getItem('quao_house_cart')) || [];
