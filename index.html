@@ -53,6 +53,25 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        /* KHU VỰC HIỂN THỊ ẢNH MENU GỐC */
+        .menu-image-container {
+            flex-shrink: 0;
+            margin-bottom: 10px;
+            text-align: center;
+            background: #fff;
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .menu-image-container img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
         /* VÙNG CUỘN MENU THỨC UỐNG */
         .menu-scroll-container {
             flex-grow: 1;
@@ -155,11 +174,17 @@
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        #topping-modal .modal-content {
+        #topping-modal .modal-content, #image-modal .modal-content {
             height: auto;
-            max-height: 75dvh;
+            max-height: 85dvh;
             margin: auto 15px;
             border-radius: 20px;
+        }
+        #image-modal .modal-content img {
+            width: 100%;
+            height: auto;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
         }
 
         .modal-header {
@@ -206,7 +231,7 @@
         .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .item-total-price-box { width: 70px; text-align: right; font-size: 14px; font-weight: bold; color: #1e293b; padding-top: 3px; }
 
-        /* KHU VỰC NÚT BẤM PHÍA DƯỚI PANEL (CHỈ CÒN 2 NÚT) */
+        /* KHU VỰC NÚT BẤM PHÍA DƯỚI PANEL */
         .total-area { padding: 14px 16px; border-top: 2px solid #f1f5f9; background: #fafafa; flex-shrink: 0; }
         .total-row { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
         
@@ -235,6 +260,11 @@
             <button class="btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
         </div>
         
+        <!-- HIỂN THỊ ẢNH MENU GỐC DƯỚI NÚT MÓN NGOÀI (Bấm vào để phóng to xem rõ hơn) -->
+        <div class="menu-image-container">
+            <img src="menu.jpg" alt="Menu" onclick="toggleImageModal(true)" title="Nhấn để phóng to ảnh gốc">
+        </div>
+
         <div class="menu-scroll-container" id="menu-scroll-view"></div>
     </div>
 
@@ -245,6 +275,18 @@
         <div class="cart-badge" id="cart-badge">0</div>
     </button>
 
+    <!-- MODAL HIỂN THỊ ẢNH GỐC PHÓNG TO -->
+    <div class="modal-overlay" id="image-modal" onclick="toggleImageModal(false)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Ảnh Menu Gốc</h3>
+                <button class="btn-close-modal" onclick="toggleImageModal(false)">&times;</button>
+            </div>
+            <img src="menu.jpg" alt="Menu Phóng To">
+        </div>
+    </div>
+
+    <!-- MODAL GIỎ HÀNG -->
     <div class="modal-overlay" id="bill-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -269,6 +311,7 @@
         </div>
     </div>
 
+    <!-- MODAL TOPPING -->
     <div class="modal-overlay" id="topping-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -380,18 +423,20 @@ const toppingMenu = [
     {name: "Sương sáo", price: 5000}
 ];
 
-
-        // Tự động khôi phục dữ liệu giỏ hàng cũ đã lưu ở localStorage
         let currentOrder = JSON.parse(localStorage.getItem('quao_house_cart')) || [];
         let activeItemIndex = null;
 
-        // Hàm hỗ trợ lưu giỏ hàng vào bộ nhớ trình duyệt
         function saveCartToStorage() {
             localStorage.setItem('quao_house_cart', JSON.stringify(currentOrder));
         }
 
         function toggleBillModal(show) {
             const modal = document.getElementById('bill-modal');
+            if (show) modal.classList.add('open'); else modal.classList.remove('open');
+        }
+
+        function toggleImageModal(show) {
+            const modal = document.getElementById('image-modal');
             if (show) modal.classList.add('open'); else modal.classList.remove('open');
         }
 
@@ -441,7 +486,7 @@ const toppingMenu = [
 
         function updateNote(index, noteText) {
             currentOrder[index].note = noteText;
-            saveCartToStorage(); // Lưu ghi chú ngay khi người dùng gõ phím
+            saveCartToStorage();
         }
 
         function updateUserTag(index) {
@@ -489,7 +534,7 @@ const toppingMenu = [
         }
 
         function renderOrder() {
-            saveCartToStorage(); // Cập nhật lại bộ nhớ mỗi lần render giao diện giỏ hàng
+            saveCartToStorage();
             const list = document.getElementById('order-list');
             let total = 0;
             let totalQty = 0;
